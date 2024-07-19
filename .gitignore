@@ -1,0 +1,9 @@
+# Node modules
+node_modules/
+
+# Log files
+*.log
+
+# Environment files
+
+# Optional: Ignore other files or folders you don't want to push
