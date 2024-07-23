@@ -5,6 +5,7 @@ import { PaginationParams } from '../models/PaginationParams';
 import { CreateProductRequest, UpdateProductRequest } from './data/request/ProductRequest';
 import AppDataSource from '../config/db';
 import { ProductPayload } from './data/payload/ProductPayload';
+import { CategoryEnum } from '../enums/CategoryEnum';
 
 class ProductService {
   private productRepository: Repository<ProductEntity>;
@@ -24,8 +25,22 @@ class ProductService {
       take: pageSize,
     });
 
+    const products: ProductPayload[] = result.map((product: ProductEntity) => ({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      displayName: product.display_name,
+      imageUrl: product.image_url ?? [],
+      description: product.description ?? undefined,
+      category: product.category ?? undefined,
+      type: product.type ?? undefined,
+      status: product.status,
+      createdDate: product.created_date,
+      lastActionDate: product.last_action_date,
+    }));
+
     return {
-      rows: result,
+      rows: products,
       totalElements: total,
       currentPage: pageIndex,
       totalPages: Math.ceil(total / pageSize),
@@ -33,12 +48,12 @@ class ProductService {
     };
   }
 
-  async createProduct(request: CreateProductRequest): Promise<ProductPayload> {
+  async createProduct(request: CreateProductRequest): Promise<ProductEntity> {
     const product = this.productRepository.create(request);
     return this.productRepository.save(product);
   }
 
-  async updateProduct(request: UpdateProductRequest): Promise<ProductPayload> {
+  async updateProduct(request: UpdateProductRequest): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
       where: { id: request.id },
     });
