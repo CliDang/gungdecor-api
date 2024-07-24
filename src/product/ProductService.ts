@@ -14,7 +14,7 @@ class ProductService {
     this.productRepository = AppDataSource.getRepository(ProductEntity);
   }
 
-  async getProducts(params: PaginationParams<ProductPayload>): Promise<Page<ProductPayload>> {
+  async getProducts(params: PaginationParams<ProductPayload>): Promise<ProductPayload[]> {
     const { pageIndex, pageSize, sort, sortBy } = params;
 
     const sortOrder = sort === "DESC" ? "DESC" : "ASC";
@@ -39,13 +39,7 @@ class ProductService {
       lastActionDate: product.last_action_date,
     }));
 
-    return {
-      rows: products,
-      totalElements: total,
-      currentPage: pageIndex,
-      totalPages: Math.ceil(total / pageSize),
-      pageSize: pageSize,
-    };
+    return products;
   }
 
   async createProduct(request: CreateProductRequest): Promise<ProductEntity> {
