@@ -7,55 +7,18 @@ import express, {
 import dotenv from "dotenv";
 import AppDataSource from "./config/db";
 import apiRoutes from "./routes";
+import { corsOptions } from "./middlewares/cors";
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
 
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.use("/api/v1", apiRoutes);
-
-app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
-  switch (err.status) {
-      case 500:
-          res.status(500).json({
-              "success": false,
-              "code": 4001,
-              "error": err.message || "Server Error"
-          });
-          break;
-      case 404:
-          res.status(404).json({
-              "success": false,
-              "code": 4001,
-              "error": err.message || "Resource not found"
-          });
-          break;
-      case 401:
-          res.status(401).json({
-              "success": false,
-              "code": 2001,
-              "error": err.message || "Unauthorized"
-          });
-          break;
-      case 403:
-          res.status(403).json({
-              "success": false,
-              "code": 2002,
-              "error": err.message || "Forbidden"
-          });
-          break;
-
-      default:
-          res.status(404).json({
-              "success": false,
-              "code": 4001,
-              "error": err.message || "Resource not found"
-          });
-          break;
-  }
-});
 
 const PORT = process.env.PORT;
 
